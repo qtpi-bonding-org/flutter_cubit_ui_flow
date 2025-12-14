@@ -1,12 +1,6 @@
-import '../contracts/async_state.dart';
-import '../contracts/feedback_service.dart';
-import '../contracts/global_ui_service.dart';
-import '../contracts/loading_service.dart';
-import '../contracts/localization_service.dart';
-import '../contracts/mappers.dart';
-import '../contracts/message_key.dart';
+import '../contracts/all_contracts.dart';
 
-/// Default implementation of [IGlobalUiService].
+/// Default implementation of [IUiFlowService].
 ///
 /// This service orchestrates:
 /// - Translating message keys to localized strings
@@ -15,18 +9,18 @@ import '../contracts/message_key.dart';
 ///
 /// Example:
 /// ```dart
-/// final uiService = GlobalUiService(
+/// final uiService = UiFlowService(
 ///   localization: AppLocalizationService(),
 ///   feedback: OverlayFeedbackService(navigatorKey),
 ///   loading: OverlayLoadingService(navigatorKey),
 /// );
 /// ```
-class GlobalUiService implements IGlobalUiService {
+class UiFlowService implements IUiFlowService {
   final ILocalizationService _localization;
   final IFeedbackService _feedback;
   final ILoadingService _loading;
 
-  GlobalUiService({
+  UiFlowService({
     required ILocalizationService localization,
     required IFeedbackService feedback,
     required ILoadingService loading,
@@ -57,7 +51,7 @@ class GlobalUiService implements IGlobalUiService {
   void hideLoading() => _loading.hide();
 
   @override
-  void handleState<S extends IAsyncState>(
+  void handleState<S extends IUiFlowState>(
     S state,
     IStateMessageMapper<S> mapper,
   ) {

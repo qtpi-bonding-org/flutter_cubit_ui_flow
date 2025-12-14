@@ -4,10 +4,10 @@ import 'package:cubit_ui_flow/cubit_ui_flow.dart';
 void main() {
   print('=== cubit_ui_flow Library Test ===');
   
-  // Test AsyncStatus
-  print('AsyncStatus.idle.isIdle: ${AsyncStatus.idle.isIdle}');
-  print('AsyncStatus.loading.isLoading: ${AsyncStatus.loading.isLoading}');
-  print('AsyncStatus.success.isComplete: ${AsyncStatus.success.isComplete}');
+  // Test UiFlowStatus
+  print('UiFlowStatus.idle.isIdle: ${UiFlowStatus.idle.isIdle}');
+  print('UiFlowStatus.loading.isLoading: ${UiFlowStatus.loading.isLoading}');
+  print('UiFlowStatus.success.isComplete: ${UiFlowStatus.success.isComplete}');
   
   // Test MessageKey
   const errorKey = MessageKey.error('test.error');

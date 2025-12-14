@@ -1,33 +1,30 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../contracts/async_state.dart';
-import '../contracts/global_ui_service.dart';
-import '../contracts/mappers.dart';
-import '../contracts/message_key.dart';
+import '../contracts/all_contracts.dart';
 
-/// Reusable BlocListener that handles async state → UI feedback.
+/// Reusable BlocListener that handles state → UI feedback flow.
 ///
 /// This widget wraps your screen content and automatically handles:
-/// - Loading overlays (via [IGlobalUiService])
-/// - Error toasts (via mapper → [IGlobalUiService])
+/// - Loading overlays (via [IUiFlowService])
+/// - Error toasts (via mapper → [IUiFlowService])
 /// - Success notifications (optional)
 ///
 /// Example:
 /// ```dart
-/// AsyncUiListener<TrackerCubit, TrackerState>(
+/// UiFlowStateListener<TrackerCubit, TrackerState>(
 ///   mapper: BaseStateMessageMapper(
 ///     exceptionMapper: getIt<IExceptionKeyMapper>(),
 ///     domainMapper: TrackerDomainMapper(),
 ///   ),
-///   uiService: getIt<IGlobalUiService>(),
+///   uiService: getIt<IUiFlowService>(),
 ///   onStateChanged: (context, state) {
 ///     if (state.shouldNavigateBack) Navigator.pop(context);
 ///   },
 ///   child: TrackerScreen(),
 /// )
 /// ```
-class AsyncUiListener<B extends StateStreamable<S>, S extends IAsyncState>
+class UiFlowStateListener<B extends StateStreamable<S>, S extends IUiFlowState>
     extends StatelessWidget {
   /// The child widget to wrap.
   final Widget child;
@@ -36,7 +33,7 @@ class AsyncUiListener<B extends StateStreamable<S>, S extends IAsyncState>
   final IStateMessageMapper<S> mapper;
 
   /// The UI service that handles messages.
-  final IGlobalUiService uiService;
+  final IUiFlowService uiService;
 
   /// Optional specific bloc instance to listen to.
   final B? bloc;
@@ -53,7 +50,7 @@ class AsyncUiListener<B extends StateStreamable<S>, S extends IAsyncState>
   /// Whether to show success messages.
   final bool showSuccessMessages;
 
-  const AsyncUiListener({
+  const UiFlowStateListener({
     super.key,
     required this.child,
     required this.mapper,
@@ -106,18 +103,18 @@ class AsyncUiListener<B extends StateStreamable<S>, S extends IAsyncState>
   }
 }
 
-/// Convenience widget for screens that only need basic async listening.
+/// Convenience widget for screens that only need basic state listening.
 ///
 /// This is a simplified version that uses a provided mapper factory.
-class SimpleAsyncUiListener<B extends StateStreamable<S>, S extends IAsyncState>
+class SimpleUiFlowStateListener<B extends StateStreamable<S>, S extends IUiFlowState>
     extends StatelessWidget {
   final Widget child;
   final IStateMessageMapper<S> mapper;
-  final IGlobalUiService uiService;
+  final IUiFlowService uiService;
   final B? bloc;
   final bool showSuccessMessages;
 
-  const SimpleAsyncUiListener({
+  const SimpleUiFlowStateListener({
     super.key,
     required this.child,
     required this.mapper,
@@ -128,7 +125,7 @@ class SimpleAsyncUiListener<B extends StateStreamable<S>, S extends IAsyncState>
 
   @override
   Widget build(BuildContext context) {
-    return AsyncUiListener<B, S>(
+    return UiFlowStateListener<B, S>(
       bloc: bloc,
       mapper: mapper,
       uiService: uiService,
@@ -138,18 +135,18 @@ class SimpleAsyncUiListener<B extends StateStreamable<S>, S extends IAsyncState>
   }
 }
 
-/// Builder widget that provides async state information to its child.
+/// Builder widget that provides UI flow state information to its child.
 ///
 /// Useful for widgets that need to conditionally render based on
-/// async state without triggering side effects.
-class AsyncStateBuilder<B extends StateStreamable<S>, S extends IAsyncState>
+/// state without triggering side effects.
+class UiFlowStateBuilder<B extends StateStreamable<S>, S extends IUiFlowState>
     extends StatelessWidget {
   final Widget Function(BuildContext context, S state, Widget? child) builder;
   final Widget? child;
   final B? bloc;
   final bool Function(S previous, S current)? buildWhen;
 
-  const AsyncStateBuilder({
+  const UiFlowStateBuilder({
     super.key,
     required this.builder,
     this.child,

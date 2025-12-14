@@ -4,20 +4,20 @@ import 'dart:async';
 import 'package:cubit_ui_flow/cubit_ui_flow.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Example state using AsyncStateMixin
-class ExampleState with AsyncStateMixin {
-  final AsyncStatus status;
+// Example state using UiFlowStateMixin
+class ExampleState with UiFlowStateMixin {
+  final UiFlowStatus status;
   final Object? error;
   final List<String> items;
 
   const ExampleState({
-    this.status = AsyncStatus.idle,
+    this.status = UiFlowStatus.idle,
     this.error,
     this.items = const [],
   });
 
   ExampleState copyWith({
-    AsyncStatus? status,
+    UiFlowStatus? status,
     Object? error,
     List<String>? items,
   }) {
@@ -41,7 +41,7 @@ class ExampleCubit extends TryOperationCubit<ExampleState> {
       final items = ['Item 1', 'Item 2', 'Item 3'];
       
       return state.copyWith(
-        status: AsyncStatus.success,
+        status: UiFlowStatus.success,
         items: items,
       );
     });
@@ -51,7 +51,7 @@ class ExampleCubit extends TryOperationCubit<ExampleState> {
   Future<void> clearItems() async {
     await tryOperation(() {
       return state.copyWith(
-        status: AsyncStatus.success,
+        status: UiFlowStatus.success,
         items: [],
       );
     });
@@ -65,7 +65,7 @@ class ExampleCubit extends TryOperationCubit<ExampleState> {
       }
       
       return state.copyWith(
-        status: AsyncStatus.success,
+        status: UiFlowStatus.success,
         items: [...state.items, 'New Item'],
       );
     });
