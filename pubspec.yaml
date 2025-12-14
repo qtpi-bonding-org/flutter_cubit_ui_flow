@@ -1,0 +1,32 @@
+name: cubit_ui_flow
+description: Cubit state to UI feedback orchestration for Flutter. Contracts-based architecture with automatic loading and error handling.
+version: 0.1.0
+homepage: https://github.com/quanitya/flutter_cubit_ui_flow
+repository: https://github.com/quanitya/flutter_cubit_ui_flow
+issue_tracker: https://github.com/quanitya/flutter_cubit_ui_flow/issues
+documentation: https://github.com/quanitya/flutter_cubit_ui_flow/blob/main/INTEGRATION_GUIDE.md
+
+topics:
+  - flutter
+  - cubit
+  - bloc
+  - state-management
+  - ui-feedback
+  - loading
+  - error-handling
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.0
+  meta: ^1.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  mocktail: ^1.0.0
