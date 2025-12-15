@@ -12,7 +12,7 @@ extension TryOperationExtension<S extends IUiFlowState> on Cubit<S> {
   /// This method automatically handles:
   /// - Loading state emission (optional)
   /// - Success state emission (from action result)
-  /// - Error state emission with proper error handling
+  /// - Error state emission (errors are captured in state, not rethrown)
   /// 
   /// Usage:
   /// ```dart
@@ -42,8 +42,7 @@ extension TryOperationExtension<S extends IUiFlowState> on Cubit<S> {
       // Emit error state
       emit(_createErrorState(error));
       
-      // Re-throw for additional error handling if needed
-      rethrow;
+      // Error is now in state - no need to rethrow
     }
   }
 
@@ -84,7 +83,7 @@ mixin TryOperationMixin<S extends IUiFlowState> on Cubit<S> {
       emit(successState);
     } catch (error, stackTrace) {
       emit(createErrorState(error));
-      rethrow;
+      // Error is now in state - no need to rethrow
     }
   }
 
@@ -127,7 +126,7 @@ abstract class TryOperationCubit<S extends IUiFlowState> extends Cubit<S> {
       emit(successState);
     } catch (error, stackTrace) {
       emit(createErrorState(error));
-      rethrow;
+      // Error is now in state - no need to rethrow
     }
   }
 
