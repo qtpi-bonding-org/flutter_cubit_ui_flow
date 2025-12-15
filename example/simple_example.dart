@@ -1,5 +1,6 @@
 // Simple Dart example of cubit_ui_flow library
 import 'package:cubit_ui_flow/cubit_ui_flow.dart';
+import 'example_implementations.dart';
 
 void main() {
   print('=== cubit_ui_flow Library Test ===');
@@ -7,7 +8,7 @@ void main() {
   // Test UiFlowStatus
   print('UiFlowStatus.idle.isIdle: ${UiFlowStatus.idle.isIdle}');
   print('UiFlowStatus.loading.isLoading: ${UiFlowStatus.loading.isLoading}');
-  print('UiFlowStatus.success.isComplete: ${UiFlowStatus.success.isComplete}');
+  print('UiFlowStatus.success.isSuccess: ${UiFlowStatus.success.isSuccess}');
   
   // Test MessageKey
   const errorKey = MessageKey.error('test.error');

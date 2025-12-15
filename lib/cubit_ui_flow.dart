@@ -11,4 +11,3 @@ export 'src/widgets/ui_flow_state_listener.dart';
 
 // Service implementations
 export 'src/impl/ui_flow_service_impl.dart';
-export 'src/impl/base_state_mapper.dart';

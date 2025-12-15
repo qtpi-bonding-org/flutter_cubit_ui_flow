@@ -2,11 +2,13 @@
 import 'dart:async';
 
 import 'package:cubit_ui_flow/cubit_ui_flow.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'example_implementations.dart';
 
 // Example state using UiFlowStateMixin
 class ExampleState with UiFlowStateMixin {
+  @override
   final UiFlowStatus status;
+  @override
   final Object? error;
   final List<String> items;
 
