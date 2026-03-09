@@ -66,6 +66,18 @@ class MessageKey {
   const MessageKey.error(this.key, [this.args]) : type = MessageType.error;
   const MessageKey.loading(this.key, [this.args]) : type = MessageType.loading;
 
+  /// Factories that accept typed (key, args) records from L10nKeys.
+  MessageKey.infoFrom((String, Map<String, dynamic>) record)
+      : key = record.$1, args = record.$2, type = MessageType.info;
+  MessageKey.successFrom((String, Map<String, dynamic>) record)
+      : key = record.$1, args = record.$2, type = MessageType.success;
+  MessageKey.warningFrom((String, Map<String, dynamic>) record)
+      : key = record.$1, args = record.$2, type = MessageType.warning;
+  MessageKey.errorFrom((String, Map<String, dynamic>) record)
+      : key = record.$1, args = record.$2, type = MessageType.error;
+  MessageKey.loadingFrom((String, Map<String, dynamic>) record)
+      : key = record.$1, args = record.$2, type = MessageType.loading;
+
   static const MessageKey genericError = MessageKey._('error.generic', MessageType.error);
   static const MessageKey genericSuccess = MessageKey._('success.generic', MessageType.success);
   static const MessageKey networkError = MessageKey._('error.network', MessageType.error);
