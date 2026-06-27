@@ -50,6 +50,16 @@ class UiFlowStateListener<B extends StateStreamable<S>, S extends IUiFlowState>
   /// Whether to show success messages.
   final bool showSuccessMessages;
 
+  /// Optional service that displays a determinate progress bar.
+  /// When provided and the state implements [IUiFlowProgressState] with a
+  /// non-null progress value, the progress bar is shown instead of the
+  /// generic loading overlay.
+  final IProgressService? progressService;
+
+  /// Optional label to forward to the progress bar when the state does not
+  /// supply its own.
+  final String? progressLabel;
+
   const UiFlowStateListener({
     super.key,
     required this.child,
@@ -60,6 +70,8 @@ class UiFlowStateListener<B extends StateStreamable<S>, S extends IUiFlowState>
     this.listenWhen,
     this.showLoadingOverlay = true,
     this.showSuccessMessages = false,
+    this.progressService,
+    this.progressLabel,
   });
 
   @override
@@ -70,10 +82,22 @@ class UiFlowStateListener<B extends StateStreamable<S>, S extends IUiFlowState>
       listener: (context, state) {
         // Handle loading
         if (showLoadingOverlay) {
-          if (state.isLoading) {
+          final p = state is IUiFlowProgressState
+              ? (state as IUiFlowProgressState).progress
+              : null;
+          if (state.isLoading && p != null) {
+            progressService?.show(UiFlowProgress(
+              label: progressLabel ?? p.label,
+              current: p.current,
+              total: p.total,
+            ));
+            uiService.hideLoading();
+          } else if (state.isLoading) {
             uiService.showLoading();
+            progressService?.hide();
           } else {
             uiService.hideLoading();
+            progressService?.hide();
           }
         }
 
@@ -98,8 +122,15 @@ class UiFlowStateListener<B extends StateStreamable<S>, S extends IUiFlowState>
   }
 
   bool _defaultListenWhen(S previous, S current) {
+    final pp = previous is IUiFlowProgressState
+        ? (previous as IUiFlowProgressState).progress
+        : null;
+    final cp = current is IUiFlowProgressState
+        ? (current as IUiFlowProgressState).progress
+        : null;
     return previous.status != current.status ||
-        previous.error != current.error;
+        previous.error != current.error ||
+        pp != cp;
   }
 }
 
