@@ -147,3 +147,41 @@ abstract class IUiFlowService {
   void hideLoading();
   void handleState<S extends IUiFlowState>(S state, IStateMessageMapper<S> mapper);
 }
+/// Determinate progress payload. total == 0 means indeterminate.
+@immutable
+class UiFlowProgress {
+  final String? label;
+  final int current;
+  final int total;
+
+  const UiFlowProgress({this.label, this.current = 0, this.total = 0});
+
+  bool get isDeterminate => total > 0;
+  double? get fraction => total > 0 ? current / total : null;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UiFlowProgress &&
+          other.label == label &&
+          other.current == current &&
+          other.total == total);
+
+  @override
+  int get hashCode => Object.hash(label, current, total);
+
+  @override
+  String toString() =>
+      "UiFlowProgress(label: $label, current: $current, total: $total)";
+}
+
+/// Opt-in interface: states that report determinate progress.
+/// Separate from IUiFlowState so existing states compile unchanged.
+abstract class IUiFlowProgressState implements IUiFlowState {
+  UiFlowProgress? get progress;
+}
+
+abstract class IProgressService {
+  void show(UiFlowProgress progress);
+  void hide();
+}
