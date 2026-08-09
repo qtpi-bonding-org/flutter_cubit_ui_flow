@@ -8,6 +8,8 @@ export 'src/utils/cubit_extensions.dart';
 
 // Widget implementations
 export 'src/widgets/ui_flow_state_listener.dart';
+export 'src/widgets/cubit_adapter.dart';
+export 'src/widgets/combine_latest.dart';
 
 // Service implementations
 export 'src/impl/ui_flow_service_impl.dart';
