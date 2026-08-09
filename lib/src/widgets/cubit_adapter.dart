@@ -32,12 +32,15 @@ abstract class CubitAdapterState<C extends Cubit<S>, S>
   ValueListenable<T> cubitField<T>(T Function(S) selector);
   ValueListenable<UiFlowStatus> cubitStatus();
   ValueListenable<Object?> cubitError();
+  void listenTo<T>(
+      Object key, ValueListenable<T> listenable, VoidCallback listener);
 }
 
 class _CubitAdapterState<C extends Cubit<S>, S>
     extends CubitAdapterState<C, S> {
   final _cache = <Object, ValueNotifier<Object?>>{};
   final _subscriptions = <StreamSubscription<S>>[];
+  final _valueListeners = <Object, (Listenable, VoidCallback)>{};
 
   ValueListenable<T> cubitField<T>(T Function(S) selector) {
     final key = selector;
@@ -62,6 +65,14 @@ class _CubitAdapterState<C extends Cubit<S>, S>
         _selectError as Object? Function(S),
       );
 
+  @override
+  void listenTo<T>(
+      Object key, ValueListenable<T> listenable, VoidCallback listener) {
+    if (_valueListeners.containsKey(key)) return;
+    listenable.addListener(listener);
+    _valueListeners[key] = (listenable, listener);
+  }
+
   static UiFlowStatus _selectStatus(Object state) =>
       (state as IUiFlowState).status;
 
@@ -74,6 +85,9 @@ class _CubitAdapterState<C extends Cubit<S>, S>
     }
     for (final notifier in _cache.values) {
       notifier.dispose();
+    }
+    for (final (listenable, listener) in _valueListeners.values) {
+      listenable.removeListener(listener);
     }
     widget.disposeAdapter();
     super.dispose();
