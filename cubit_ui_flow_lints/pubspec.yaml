@@ -1,0 +1,11 @@
+name: cubit_ui_flow_lints
+description: Custom lint rules for cubit_ui_flow.
+version: 0.1.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  analyzer: ^9.0.0
+  custom_lint_builder: ^0.8.1
+  meta: ^1.9.0

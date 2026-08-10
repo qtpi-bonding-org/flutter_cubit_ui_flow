@@ -13,3 +13,14 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+    # cubit_ui_flow_lints is a separate pub package (Prerequisite A split);
+    # its analyzer/custom_lint_builder deps are unrelated to this package's
+    # resolution and it has its own analysis_options.yaml.
+    - cubit_ui_flow_lints/**

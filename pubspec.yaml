@@ -24,14 +24,6 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.0
   meta: ^1.9.0
-  # These back the custom_lint plugin exported from lib/cubit_ui_flow.dart
-  # (via lib/custom_lint.dart -> lib/cubit_ui_flow_lints.dart). They must be
-  # regular dependencies, not dev_dependencies: dev_dependencies of a
-  # git/path-dependency package are invisible to downstream consumers' pub
-  # resolution, so a consuming app's `dart run custom_lint` could never
-  # resolve these imports if they stayed dev-only.
-  analyzer: ^9.0.0
-  custom_lint_builder: ^0.8.1
 
 dev_dependencies:
   flutter_test:
