@@ -5,7 +5,9 @@ import '../contracts/all_contracts.dart';
 /// Extension on [Cubit] to provide tryOperation functionality.
 ///
 /// This extension provides easy access to the TryOperation functionality
-/// for any Cubit that uses IUiFlowState.
+/// for any Cubit that uses IUiFlowState. Extensions can't be overridden, so
+/// this variant has no error-side-effect hook — use [TryOperationMixin] or
+/// [TryOperationCubit] if you need [onOperationError].
 extension TryOperationExtension<S extends IUiFlowState> on Cubit<S> {
   /// Executes an operation with automatic state management.
   ///
@@ -32,7 +34,7 @@ extension TryOperationExtension<S extends IUiFlowState> on Cubit<S> {
     try {
       // Optionally emit loading state
       if (emitLoading) {
-        emit(_createLoadingState());
+        emit(state.withLoading() as S);
       }
 
       // Execute action and emit success state
@@ -40,17 +42,11 @@ extension TryOperationExtension<S extends IUiFlowState> on Cubit<S> {
       emit(successState);
     } catch (error, stackTrace) {
       // Emit error state
-      emit(_createErrorState(error));
+      emit(state.withError(error) as S);
 
       // Error is now in state - no need to rethrow
     }
   }
-
-  /// Delegates to [IUiFlowState.withLoading] on the current state.
-  S _createLoadingState() => state.withLoading() as S;
-
-  /// Delegates to [IUiFlowState.withError] on the current state.
-  S _createErrorState(Object error) => state.withError(error) as S;
 }
 
 /// Mixin that provides TryOperation functionality for Cubits.
@@ -71,6 +67,7 @@ mixin TryOperationMixin<S extends IUiFlowState> on Cubit<S> {
       emit(successState);
     } catch (error, stackTrace) {
       emit(createErrorState(error));
+      onOperationError(error, stackTrace);
       // Error is now in state - no need to rethrow
     }
   }
@@ -82,6 +79,11 @@ mixin TryOperationMixin<S extends IUiFlowState> on Cubit<S> {
   /// Creates error state from current state and error.
   /// Delegates to [IUiFlowState.withError]; override to customize further.
   S createErrorState(Object error) => state.withError(error) as S;
+
+  /// Called after an operation's error state has been emitted. No-op by
+  /// default — override to add a side effect (logging, diagnostics capture,
+  /// etc.) without duplicating [tryOperation]'s try/catch/emit control flow.
+  void onOperationError(Object error, StackTrace stackTrace) {}
 }
 
 /// Base Cubit class that provides TryOperation functionality.
@@ -104,6 +106,7 @@ abstract class TryOperationCubit<S extends IUiFlowState> extends Cubit<S> {
       emit(successState);
     } catch (error, stackTrace) {
       emit(createErrorState(error));
+      onOperationError(error, stackTrace);
       // Error is now in state - no need to rethrow
     }
   }
@@ -115,4 +118,9 @@ abstract class TryOperationCubit<S extends IUiFlowState> extends Cubit<S> {
   /// Creates error state from current state and error.
   /// Delegates to [IUiFlowState.withError]; override to customize further.
   S createErrorState(Object error) => state.withError(error) as S;
+
+  /// Called after an operation's error state has been emitted. No-op by
+  /// default — override to add a side effect (logging, diagnostics capture,
+  /// etc.) without duplicating [tryOperation]'s try/catch/emit control flow.
+  void onOperationError(Object error, StackTrace stackTrace) {}
 }

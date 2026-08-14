@@ -116,6 +116,25 @@ class _UnionCubit extends TryOperationCubit<_UnionState> {
       );
 }
 
+// Exercises the onOperationError hook the way ErrorPrivserverMixin uses it:
+// a side effect on top of tryOperation's control flow, no duplicated
+// try/catch/emit logic.
+class _HookedCubit extends TryOperationCubit<_FlatState> {
+  _HookedCubit() : super(const _FlatState());
+
+  final captured = <Object>[];
+
+  Future<void> loadFails() => tryOperation(
+        () async => throw Exception('boom'),
+        emitLoading: true,
+      );
+
+  @override
+  void onOperationError(Object error, StackTrace stackTrace) {
+    captured.add(error);
+  }
+}
+
 void main() {
   group('tryOperation over a flat UiFlowStateMixin state', () {
     test('emits loading then success', () async {
@@ -169,6 +188,18 @@ void main() {
       expect(states.map((s) => s.status),
           [UiFlowStatus.loading, UiFlowStatus.failure]);
       expect(states.last.error, contains('boom'));
+      await cubit.close();
+    });
+  });
+
+  group('onOperationError hook', () {
+    test('fires once per failed operation, after the error state is emitted', () async {
+      final cubit = _HookedCubit();
+      await cubit.loadFails();
+      await pumpEventQueue();
+      expect(cubit.captured, hasLength(1));
+      expect(cubit.captured.single, isA<Exception>());
+      expect(cubit.state.status, UiFlowStatus.failure);
       await cubit.close();
     });
   });
