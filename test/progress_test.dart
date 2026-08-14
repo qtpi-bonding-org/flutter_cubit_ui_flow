@@ -87,6 +87,11 @@ class _ProgState implements IUiFlowProgressState {
   @override
   Object? get error => null;
   @override
+  _ProgState withLoading() => _ProgState(UiFlowStatus.loading, progress);
+  @override
+  _ProgState withError(Object error) =>
+      _ProgState(UiFlowStatus.failure, progress);
+  @override
   bool get isIdle => status == UiFlowStatus.idle;
   @override
   bool get isLoading => status == UiFlowStatus.loading;

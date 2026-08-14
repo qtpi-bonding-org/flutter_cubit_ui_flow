@@ -3,17 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../contracts/all_contracts.dart';
 
 /// Extension on [Cubit] to provide tryOperation functionality.
-/// 
+///
 /// This extension provides easy access to the TryOperation functionality
 /// for any Cubit that uses IUiFlowState.
 extension TryOperationExtension<S extends IUiFlowState> on Cubit<S> {
   /// Executes an operation with automatic state management.
-  /// 
+  ///
   /// This method automatically handles:
   /// - Loading state emission (optional)
   /// - Success state emission (from action result)
   /// - Error state emission (errors are captured in state, not rethrown)
-  /// 
+  ///
   /// Usage:
   /// ```dart
   /// await tryOperation(() async {
@@ -41,32 +41,20 @@ extension TryOperationExtension<S extends IUiFlowState> on Cubit<S> {
     } catch (error, stackTrace) {
       // Emit error state
       emit(_createErrorState(error));
-      
+
       // Error is now in state - no need to rethrow
     }
   }
 
-  /// Creates loading state from current state.
-  /// Uses dynamic copyWith pattern for compatibility with Freezed states.
-  S _createLoadingState() {
-    return (state as dynamic).copyWith(
-      status: UiFlowStatus.loading,
-      error: null,
-    ) as S;
-  }
+  /// Delegates to [IUiFlowState.withLoading] on the current state.
+  S _createLoadingState() => state.withLoading() as S;
 
-  /// Creates error state from current state and error.
-  /// Uses dynamic copyWith pattern for compatibility with Freezed states.
-  S _createErrorState(Object error) {
-    return (state as dynamic).copyWith(
-      status: UiFlowStatus.failure,
-      error: error,
-    ) as S;
-  }
+  /// Delegates to [IUiFlowState.withError] on the current state.
+  S _createErrorState(Object error) => state.withError(error) as S;
 }
 
 /// Mixin that provides TryOperation functionality for Cubits.
-/// 
+///
 /// Use this when you want to add tryOperation functionality but can't use
 /// the extension due to inheritance constraints.
 mixin TryOperationMixin<S extends IUiFlowState> on Cubit<S> {
@@ -88,26 +76,16 @@ mixin TryOperationMixin<S extends IUiFlowState> on Cubit<S> {
   }
 
   /// Creates loading state from current state.
-  /// Override to customize loading state creation.
-  S createLoadingState() {
-    return (state as dynamic).copyWith(
-      status: UiFlowStatus.loading,
-      error: null,
-    ) as S;
-  }
+  /// Delegates to [IUiFlowState.withLoading]; override to customize further.
+  S createLoadingState() => state.withLoading() as S;
 
   /// Creates error state from current state and error.
-  /// Override to customize error state creation.
-  S createErrorState(Object error) {
-    return (state as dynamic).copyWith(
-      status: UiFlowStatus.failure,
-      error: error,
-    ) as S;
-  }
+  /// Delegates to [IUiFlowState.withError]; override to customize further.
+  S createErrorState(Object error) => state.withError(error) as S;
 }
 
 /// Base Cubit class that provides TryOperation functionality.
-/// 
+///
 /// Provides automatic state management for UI flow patterns.
 /// Use this as your base class for Cubits that need tryOperation functionality.
 abstract class TryOperationCubit<S extends IUiFlowState> extends Cubit<S> {
@@ -131,20 +109,10 @@ abstract class TryOperationCubit<S extends IUiFlowState> extends Cubit<S> {
   }
 
   /// Creates loading state from current state.
-  /// Override to customize loading state creation.
-  S createLoadingState() {
-    return (state as dynamic).copyWith(
-      status: UiFlowStatus.loading,
-      error: null,
-    ) as S;
-  }
+  /// Delegates to [IUiFlowState.withLoading]; override to customize further.
+  S createLoadingState() => state.withLoading() as S;
 
   /// Creates error state from current state and error.
-  /// Override to customize error state creation.
-  S createErrorState(Object error) {
-    return (state as dynamic).copyWith(
-      status: UiFlowStatus.failure,
-      error: error,
-    ) as S;
-  }
+  /// Delegates to [IUiFlowState.withError]; override to customize further.
+  S createErrorState(Object error) => state.withError(error) as S;
 }

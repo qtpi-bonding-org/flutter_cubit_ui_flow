@@ -18,7 +18,26 @@ extension UiFlowStatusExtension on UiFlowStatus {
 abstract class IUiFlowState {
   UiFlowStatus get status;
   Object? get error;
-  
+
+  /// The state to emit when an operation starts loading: same data,
+  /// [status] transitioned to [UiFlowStatus.loading], [error] cleared.
+  ///
+  /// Called by [TryOperationCubit]/[TryOperationMixin]/[TryOperationExtension]
+  /// instead of guessing at a `copyWith(status:, error:)` shape via a dynamic
+  /// call — implement this explicitly so the compiler (not a runtime
+  /// `NoSuchMethodError`) catches a state that can't represent loading.
+  /// A flat, single-shape state normally mixes in [UiFlowStateMixin] and
+  /// gets this for free; a sealed union overrides it to return its own
+  /// `.loading()` variant.
+  IUiFlowState withLoading();
+
+  /// The state to emit when an operation fails: same data, [status]
+  /// transitioned to [UiFlowStatus.failure], carrying [error].
+  ///
+  /// See [withLoading] for why this exists as an explicit method rather
+  /// than a dynamic `copyWith` call.
+  IUiFlowState withError(Object error);
+
   bool get isIdle => status == UiFlowStatus.idle;
   bool get isLoading => status == UiFlowStatus.loading;
   bool get isSuccess => status == UiFlowStatus.success;
@@ -27,18 +46,33 @@ abstract class IUiFlowState {
 }
 
 mixin UiFlowStateMixin implements IUiFlowState {
+  /// Default implementation for flat, single-shape states: relies on a
+  /// generated/hand-written `copyWith({status, error, ...})` existing on
+  /// the mixing-in class (true for every `@freezed` state with `@Default`
+  /// fields, which is what this mixin is meant for). States that can't
+  /// satisfy that shape — sealed unions, for instance — should implement
+  /// [IUiFlowState] directly and override [withLoading]/[withError]
+  /// themselves instead of using this mixin.
+  @override
+  IUiFlowState withLoading() => (this as dynamic)
+      .copyWith(status: UiFlowStatus.loading, error: null) as IUiFlowState;
+
+  @override
+  IUiFlowState withError(Object error) => (this as dynamic)
+      .copyWith(status: UiFlowStatus.failure, error: error) as IUiFlowState;
+
   @override
   bool get isIdle => status == UiFlowStatus.idle;
-  
+
   @override
   bool get isLoading => status == UiFlowStatus.loading;
-  
+
   @override
   bool get isSuccess => status == UiFlowStatus.success;
-  
+
   @override
   bool get isFailure => status == UiFlowStatus.failure;
-  
+
   @override
   bool get hasError => error != null;
 }
