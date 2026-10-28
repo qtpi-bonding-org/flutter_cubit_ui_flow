@@ -1,0 +1,76 @@
+id: cubit-ui-flow
+verified_at: a54fa0347f51ebb9ce98bfe8f156f0e67dba48ca
+public:
+  name: cubit_ui_flow
+  summary: Flutter package that maps Cubit state to loading, error and success UI feedback via injected contracts.
+  status: active
+  stage: beta
+  stack:
+  - Dart
+  - Flutter
+  - flutter_bloc
+private:
+  started: 2025-12
+  visibility: private
+  license: none
+  ownership: designed and directed; code written with AI assistance
+  build: ai-assisted
+facts:
+- id: try-operation-captures-errors
+  assertion: TryOperationCubit, TryOperationMixin and TryOperationExtension each provide tryOperation, which catches
+    any error thrown by the action and emits a failure state without rethrowing; a loading state is emitted only
+    when emitLoading is true (default false), and only the cubit and mixin variants call onOperationError.
+  evidence:
+  - lib/src/utils/cubit_extensions.dart
+  - test/try_operation_test.dart
+- id: ui-flow-state-contract
+  assertion: IUiFlowState requires status, error, withLoading() and withError(Object); UiFlowStateMixin implements the
+    last two through a dynamic copyWith(status:, error:), so a mixed-in state without a compatible copyWith fails
+    at runtime with NoSuchMethodError, not at compile time, while a state may instead implement withLoading and
+    withError itself.
+  evidence:
+  - lib/src/contracts/all_contracts.dart
+  - test/try_operation_test.dart
+- id: state-listener-feedback-routing
+  assertion: UiFlowStateListener shows the loading overlay while state.isLoading is true and hides it otherwise, only
+    when showLoadingOverlay is true, with a progress bar for a determinate UiFlowProgress and a spinner otherwise;
+    when not loading it runs the mapper and forwards the resulting key to IUiFlowService.handleMessage, dropping
+    success keys unless showSuccessMessages is true; its default listenWhen fires only when status, error or progress
+    changed. Tests cover the spinner and progress bar, not the mapper routing or success gating.
+  evidence:
+  - lib/src/widgets/ui_flow_state_listener.dart
+  - test/progress_test.dart
+- id: ui-flow-service-translates-and-shows
+  assertion: UiFlowService.handleMessage shows loading for a loading-type MessageKey and hides it for every other
+    type, translates key.key through ILocalizationService and passes the text and the key's type to
+    IFeedbackService.show; it has no tests.
+  evidence:
+  - lib/src/impl/ui_flow_service_impl.dart
+  - lib/src/contracts/all_contracts.dart
+- id: injected-service-and-mapper-contracts
+  assertion: The package defines only interfaces for localization, feedback, loading and the exception, domain-state
+    and state-message mappers, and ships no concrete mapper, so consumers write their own; reference mappers exist
+    only as sample code under example/.
+  evidence:
+  - lib/src/contracts/all_contracts.dart
+  - example/example_implementations.dart
+- id: cubit-adapter-scope
+  assertion: CubitAdapter and MultiCubitAdapter give a builder an AdapterScope that memoizes selector-based cubitField
+    notifiers per (cubit, selector) without notifying on equal projections, creates keyed keep() resources once across
+    rebuilds, and on dispose cancels all subscriptions and listeners and disposes kept resources; closure selectors
+    defeat memoization.
+  evidence:
+  - lib/src/widgets/adapter_scope.dart
+  - lib/src/widgets/cubit_adapter.dart
+  - lib/src/widgets/multi_cubit_adapter.dart
+  - test/adapter/cubit_adapter_selector_test.dart
+  - test/adapter/adapter_lifecycle_test.dart
+  - test/adapter/adapter_resource_test.dart
+  - test/adapter/adapter_scope_model_test.dart
+- id: combine-latest-notifiers
+  assertion: AdapterScope.combine2 and combine3, exposed on MultiCubitAdapter, derive a ValueListenable from two or
+    three sources that notifies only when the combined value changes, and derived chains tear down safely on dispose.
+  evidence:
+  - lib/src/widgets/combine_latest.dart
+  - lib/src/widgets/adapter_scope.dart
+  - test/adapter/adapter_combinator_test.dart
